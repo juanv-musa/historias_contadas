@@ -26,6 +26,7 @@ const currentProjectTitle = document.getElementById("current-project-title");
 const brandForm = document.getElementById("brand-form");
 const clientNameInput = document.getElementById("client-name-input");
 const clientColorInput = document.getElementById("client-color-input");
+const clientBgInput = document.getElementById("client-bg-input");
 const clientLogoInput = document.getElementById("client-logo-input");
 const logoPreview = document.getElementById("logo-preview");
 const footerLogosInput = document.getElementById("footer-logos-input");
@@ -170,6 +171,7 @@ function openProject(project) {
     // Rellenamos form de marca
     clientNameInput.value = project.name || "";
     clientColorInput.value = project.primary_color || "#3b82f6";
+    clientBgInput.value = project.background_color || "#0f172a";
     if (project.logo_url) {
         logoPreview.src = project.logo_url;
         logoPreview.classList.remove("hidden");
@@ -257,6 +259,7 @@ brandForm.addEventListener("submit", async (e) => {
             .update({
                 name: clientNameInput.value,
                 primary_color: clientColorInput.value,
+                background_color: clientBgInput.value,
                 logo_url: finalLogoUrl.includes('http') ? finalLogoUrl : null,
                 footer_logos_url: finalFooterLogosUrl.includes('http') ? finalFooterLogosUrl : null
             })

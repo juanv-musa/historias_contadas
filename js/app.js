@@ -63,6 +63,7 @@ async function init() {
                 project:projects (
                     name,
                     primary_color,
+                    background_color,
                     logo_url,
                     footer_logos_url
                 )
@@ -138,10 +139,28 @@ function applyBrand(brand) {
         root.style.setProperty('--brand-color', brand.primary_color);
         root.style.setProperty('--brand-color-dark', adjustColor(brand.primary_color, -40));
 
+        // Aplicamos Color de Fondo si existe
+        const bgColor = brand.background_color || '#0f172a';
+        root.style.setProperty('--bg-dark', bgColor);
+
+        // Inteligencia de Contraste
+        const isLight = getContrastYIQ(bgColor) === 'black';
+        if (isLight) {
+            root.style.setProperty('--text-primary', '#0f172a');
+            root.style.setProperty('--text-secondary', '#475569');
+            root.style.setProperty('--card-bg', 'rgba(0, 0, 0, 0.05)');
+            root.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.1)');
+        } else {
+            root.style.setProperty('--text-primary', '#f8fafc');
+            root.style.setProperty('--text-secondary', '#94a3b8');
+            root.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.05)');
+            root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.1)');
+        }
+
         // Fondo dinámico Premium
         const bgDynamic = document.getElementById("bg-dynamic");
         if (bgDynamic) {
-            bgDynamic.style.background = `radial-gradient(circle at 50% 50%, ${brand.primary_color}22 0%, var(--bg-dark) 100%)`;
+            bgDynamic.style.background = `radial-gradient(circle at 50% 50%, ${brand.primary_color}22 0%, ${bgColor} 100%)`;
         }
     }
 
@@ -156,6 +175,15 @@ function applyBrand(brand) {
 function adjustColor(color, amount) {
     if(!color) return '#3b82f6';
     return '#' + color.replace(/^#/, '').replace(/../g, c => ('0'+Math.min(255, Math.max(0, parseInt(c, 16) + amount)).toString(16)).substring(-2));
+}
+
+function getContrastYIQ(hexcolor){
+    hexcolor = hexcolor.replace("#", "");
+    var r = parseInt(hexcolor.substr(0,2),16);
+    var g = parseInt(hexcolor.substr(2,2),16);
+    var b = parseInt(hexcolor.substr(4,2),16);
+    var yiq = ((r*299)+(g*587)+(b*114))/1000;
+    return (yiq >= 128) ? 'black' : 'white';
 }
 
 function setAudioSource(lang) {
