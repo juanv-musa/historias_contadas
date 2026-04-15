@@ -32,6 +32,27 @@ const currentYearSpan = document.getElementById("current-year");
 let storyData = null;
 let currentLang = 'ES';
 
+const i18n = {
+    'ES': {
+        'pageTitle': 'Historias Contadas | Player',
+        'loading': 'Cargando Historia...',
+        'error': 'Error',
+        'errorMsg': 'No se ha especificado ninguna historia válida.',
+        'notFound': 'Historia no encontrada.',
+        'transcriptionShow': '📄 Ver Transcripción',
+        'transcriptionHide': '📄 Ocultar Transcripción'
+    },
+    'EN': {
+        'pageTitle': 'Contadas Stories | Player',
+        'loading': 'Loading Story...',
+        'error': 'Error',
+        'errorMsg': 'No valid story specified.',
+        'notFound': 'Story not found.',
+        'transcriptionShow': '📄 See Transcription',
+        'transcriptionHide': '📄 Hide Transcription'
+    }
+};
+
 async function init() {
     // 1. Obtener ID o Slug de la URL
     const params = new URLSearchParams(window.location.search);
@@ -47,7 +68,7 @@ async function init() {
     }
 
     if (!storyIdOrSlug) {
-        showError("No se ha especificado ninguna historia válida.");
+        showError(i18n[currentLang].errorMsg);
         return;
     }
 
@@ -80,7 +101,7 @@ async function init() {
 
         if (error || !data) {
             console.error(error);
-            showError("Historia no encontrada.");
+            showError(i18n[currentLang].notFound);
             return;
         }
 
@@ -103,7 +124,7 @@ async function init() {
         }
 
         // 5. Render initial info
-        storyTitle.innerText = storyData.title;
+        updateLanguageUI();
         setAudioSource('ES');
 
         // 6. Setup transcription
@@ -114,12 +135,12 @@ async function init() {
         
     } catch (error) {
         console.error("Error loading app", error);
-        showError("Ocurrió un error cargando el contenido.");
+        showError(currentLang === 'ES' ? "Ocurrió un error cargando el contenido." : "An error occurred loading the content.");
     }
 }
 
 function showError(msg) {
-    storyTitle.innerText = "Error";
+    storyTitle.innerText = i18n[currentLang].error;
     clientName.innerText = msg;
     appContainer.style.background = "rgba(255, 0, 0, 0.1)";
 }
@@ -215,6 +236,27 @@ function setAudioSource(lang) {
     }
 
     updateTranscriptionText();
+    updateLanguageUI();
+}
+
+function updateLanguageUI() {
+    if (!storyData) return;
+
+    const langSet = i18n[currentLang];
+    
+    // Page Title
+    document.title = langSet.pageTitle;
+
+    // Story Info
+    storyTitle.innerText = (currentLang === 'EN' && storyData.title_en) 
+        ? storyData.title_en 
+        : storyData.title;
+
+    // Transcription Button
+    if (transcriptionWrapper.style.display !== 'none') {
+        const isHidden = transcriptionContent.classList.contains("hidden");
+        btnToggleTranscription.innerText = isHidden ? langSet.transcriptionShow : langSet.transcriptionHide;
+    }
 }
 
 btnLangEs.addEventListener("click", () => setAudioSource('ES'));
@@ -231,7 +273,9 @@ function setupTranscription() {
     btnToggleTranscription.addEventListener("click", () => {
         const isHidden = transcriptionContent.classList.contains("hidden");
         transcriptionContent.classList.toggle("hidden");
-        btnToggleTranscription.innerText = isHidden ? '📄 Ocultar Transcripción' : '📄 Ver Transcripción';
+        
+        const langSet = i18n[currentLang];
+        btnToggleTranscription.innerText = !isHidden ? langSet.transcriptionShow : langSet.transcriptionHide;
     });
 }
 

@@ -36,6 +36,7 @@ const btnSaveBrand = document.getElementById("btn-save-brand");
 // DOM Elements: Stories
 const storyForm = document.getElementById("story-form");
 const storyTitleInput = document.getElementById("story-title-input");
+const storyTitleEnInput = document.getElementById("story-title-en-input");
 const storySlugInput = document.getElementById("story-slug-input");
 const storyImageInput = document.getElementById("story-image-input");
 const storyEsInput = document.getElementById("story-es-input");
@@ -330,8 +331,12 @@ async function loadStories() {
             <div class="edit-container hidden" style="margin-top:1rem; padding:1rem; background:rgba(255,255,255,0.05); border-radius:8px; border: 1px solid var(--border-color);">
                 <h4 style="margin-bottom:1rem;">Editar Historia</h4>
                 <div class="form-group">
-                    <label>Título</label>
+                    <label>Título (Español)</label>
                     <input type="text" class="form-control edit-title" value="${story.title}">
+                </div>
+                <div class="form-group">
+                    <label>Título (Inglés)</label>
+                    <input type="text" class="form-control edit-title-en" value="${story.title_en || ''}">
                 </div>
                 <div class="form-group">
                     <label>Slug / ID Personalizado (ej: castellar01)</label>
@@ -401,6 +406,7 @@ async function loadStories() {
 
             try {
                 const newTitle = li.querySelector(".edit-title").value;
+                const newTitleEn = li.querySelector(".edit-title-en").value;
                 const newSlug = li.querySelector(".edit-slug").value;
                 const newImage = li.querySelector(".edit-image").files[0];
                 const newFileEs = li.querySelector(".edit-audio-es").files[0];
@@ -410,6 +416,7 @@ async function loadStories() {
 
                 let updateData = {
                     title: newTitle,
+                    title_en: newTitleEn || null,
                     slug: newSlug || null,
                     transcription_es: newTransEs || null,
                     transcription_en: newTransEn || null
@@ -537,6 +544,7 @@ storyForm.addEventListener("submit", async (e) => {
             .from('stories')
             .update({
                 title: title,
+                title_en: storyTitleEnInput.value || null,
                 audio_es_url: urlEs,
                 audio_en_url: urlEn,
                 image_url: imageUrl,
