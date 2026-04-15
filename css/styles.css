@@ -75,10 +75,11 @@ body {
 }
 
 .logo {
-    max-height: 45px;
-    max-width: 180px;
+    max-height: 120px;
+    max-width: 100%;
+    width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
 }
 
 .hidden { display: none !important; }
