@@ -275,10 +275,30 @@ async function loadStories() {
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-qr" data-url="${playerUrl}">Ver QR</button>
+                    <button class="btn btn-outline btn-edit">✏️ Editar</button>
                     <button class="btn btn-danger btn-delete" data-id="${story.id}">Borrar</button>
                 </div>
             </div>
             <div class="qr-container hidden" style="margin-top:1rem; padding:1rem; background:white; border-radius:8px; text-align:center;"></div>
+            <div class="edit-container hidden" style="margin-top:1rem; padding:1rem; background:rgba(255,255,255,0.05); border-radius:8px; border: 1px solid var(--border-color);">
+                <h4 style="margin-bottom:1rem;">Editar Historia</h4>
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" class="form-control edit-title" value="${story.title}">
+                </div>
+                <div class="form-group">
+                    <label>Nuevo Audio Español (MP3) — dejar vacío para mantener el actual</label>
+                    <input type="file" class="form-control edit-audio-es" accept="audio/*">
+                </div>
+                <div class="form-group">
+                    <label>Nuevo Audio Inglés (MP3) — dejar vacío para mantener el actual</label>
+                    <input type="file" class="form-control edit-audio-en" accept="audio/*">
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-save-edit">💾 Guardar Cambios</button>
+                    <button class="btn btn-outline btn-cancel-edit">Cancelar</button>
+                </div>
+            </div>
         `;
 
         // Lógica QR
@@ -295,6 +315,70 @@ async function loadStories() {
                 });
             } else {
                 qrContainer.classList.add("hidden");
+            }
+        });
+
+        // Lógica Editar
+        const btnEdit = li.querySelector(".btn-edit");
+        const editContainer = li.querySelector(".edit-container");
+        const btnCancelEdit = li.querySelector(".btn-cancel-edit");
+        const btnSaveEdit = li.querySelector(".btn-save-edit");
+
+        btnEdit.addEventListener("click", () => {
+            editContainer.classList.toggle("hidden");
+        });
+
+        btnCancelEdit.addEventListener("click", () => {
+            editContainer.classList.add("hidden");
+        });
+
+        btnSaveEdit.addEventListener("click", async () => {
+            btnSaveEdit.innerText = "Guardando...";
+            btnSaveEdit.disabled = true;
+
+            try {
+                const newTitle = li.querySelector(".edit-title").value;
+                const newFileEs = li.querySelector(".edit-audio-es").files[0];
+                const newFileEn = li.querySelector(".edit-audio-en").files[0];
+
+                let updateData = { title: newTitle };
+
+                // Subir nuevo audio ES si se seleccionó
+                if (newFileEs) {
+                    const pathEs = `audios/${currentProjectId}/${story.id}_es.mp3`;
+                    // Intentar borrar el anterior y subir el nuevo
+                    await supabase.storage.from('historias').remove([pathEs]);
+                    const { error: errEs } = await supabase.storage.from('historias').upload(pathEs, newFileEs);
+                    if (errEs) throw errEs;
+                    updateData.audio_es_url = supabase.storage.from('historias').getPublicUrl(pathEs).data.publicUrl;
+                }
+
+                // Subir nuevo audio EN si se seleccionó
+                if (newFileEn) {
+                    const pathEn = `audios/${currentProjectId}/${story.id}_en.mp3`;
+                    await supabase.storage.from('historias').remove([pathEn]);
+                    const { error: errEn } = await supabase.storage.from('historias').upload(pathEn, newFileEn);
+                    if (errEn) throw errEn;
+                    updateData.audio_en_url = supabase.storage.from('historias').getPublicUrl(pathEn).data.publicUrl;
+                }
+
+                // Actualizar en la base de datos
+                const { error: updateError } = await supabase
+                    .from('stories')
+                    .update(updateData)
+                    .eq('id', story.id);
+
+                if (updateError) throw updateError;
+
+                alert("✅ Historia actualizada con éxito. El QR sigue siendo el mismo.");
+                loadStories();
+
+            } catch (error) {
+                console.error("Error updating story", error);
+                alert("Error al actualizar: " + error.message);
+            } finally {
+                btnSaveEdit.innerText = "💾 Guardar Cambios";
+                btnSaveEdit.disabled = false;
             }
         });
 
