@@ -33,19 +33,27 @@ let storyData = null;
 let currentLang = 'ES';
 
 async function init() {
-    // 1. Obtener ID de la URL
+    // 1. Obtener ID o Slug de la URL
     const params = new URLSearchParams(window.location.search);
-    const storyId = params.get("id");
+    let storyIdOrSlug = params.get("id");
 
-    if (!storyId) {
+    // Si no hay id en la query, miramos en la ruta del archivo (para QRs antiguos)
+    if (!storyIdOrSlug) {
+        const pathParts = window.location.pathname.split('/');
+        const lastPart = pathParts.pop() || pathParts.pop(); // Manejar posibles "/" al final
+        if (lastPart && lastPart !== 'index.html' && lastPart !== 'index') {
+            storyIdOrSlug = lastPart;
+        }
+    }
+
+    if (!storyIdOrSlug) {
         showError("No se ha especificado ninguna historia válida.");
         return;
     }
 
     try {
         // 2. Fetch Story + Project Join 
-        // En Supabase, si hemos configurado la Foreign Key en stories (project_id -> projects.id),
-        // podemos hacer un Join así:
+        // Buscamos tanto por ID (UUID) como por Slug personalizado
         const { data, error } = await supabase
             .from('stories')
             .select(`
@@ -57,7 +65,7 @@ async function init() {
                     footer_logos_url
                 )
             `)
-            .eq('id', storyId)
+            .or(`id.eq.${storyIdOrSlug},slug.eq.${storyIdOrSlug}`)
             .single();
 
         if (error || !data) {

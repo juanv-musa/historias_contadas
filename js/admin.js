@@ -35,6 +35,7 @@ const btnSaveBrand = document.getElementById("btn-save-brand");
 // DOM Elements: Stories
 const storyForm = document.getElementById("story-form");
 const storyTitleInput = document.getElementById("story-title-input");
+const storySlugInput = document.getElementById("story-slug-input");
 const storyImageInput = document.getElementById("story-image-input");
 const storyEsInput = document.getElementById("story-es-input");
 const storyEnInput = document.getElementById("story-en-input");
@@ -311,7 +312,7 @@ async function loadStories() {
                     ${storyImagePreview}
                     <div>
                         <strong>${story.title}</strong>
-                        <div style="font-size:0.8rem; color:#aaa; margin-top:4px;">ID: ${story.id}</div>
+                        <div style="font-size:0.8rem; color:#aaa; margin-top:4px;">ID: ${story.id} ${story.slug ? '| Slug: ' + story.slug : ''}</div>
                     </div>
                 </div>
                 <div style="display:flex; gap:10px;">
@@ -326,6 +327,10 @@ async function loadStories() {
                 <div class="form-group">
                     <label>Título</label>
                     <input type="text" class="form-control edit-title" value="${story.title}">
+                </div>
+                <div class="form-group">
+                    <label>Slug / ID Personalizado (ej: castellar01)</label>
+                    <input type="text" class="form-control edit-slug" value="${story.slug || ''}">
                 </div>
                 <div class="form-group">
                     <label>Nueva Foto — dejar vacío para mantener la actual</label>
@@ -391,6 +396,7 @@ async function loadStories() {
 
             try {
                 const newTitle = li.querySelector(".edit-title").value;
+                const newSlug = li.querySelector(".edit-slug").value;
                 const newImage = li.querySelector(".edit-image").files[0];
                 const newFileEs = li.querySelector(".edit-audio-es").files[0];
                 const newFileEn = li.querySelector(".edit-audio-en").files[0];
@@ -399,6 +405,7 @@ async function loadStories() {
 
                 let updateData = {
                     title: newTitle,
+                    slug: newSlug || null,
                     transcription_es: newTransEs || null,
                     transcription_en: newTransEn || null
                 };
@@ -485,9 +492,15 @@ storyForm.addEventListener("submit", async (e) => {
         }
 
         // 1. Insert placeholder to get ID
+        const title = storyTitleInput.value;
+        const slug = storySlugInput.value;
         const { data: insertedData, error: insertError } = await supabase
             .from('stories')
-            .insert([{ project_id: currentProjectId, title: title + " (Subiendo...)" }])
+            .insert([{ 
+                project_id: currentProjectId, 
+                title: title + " (Subiendo...)",
+                slug: slug || null
+            }])
             .select();
             
         if (insertError) throw insertError;
