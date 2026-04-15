@@ -492,7 +492,6 @@ storyForm.addEventListener("submit", async (e) => {
         }
 
         // 1. Insert placeholder to get ID
-        const title = storyTitleInput.value;
         const slug = storySlugInput.value;
         const { data: insertedData, error: insertError } = await supabase
             .from('stories')
