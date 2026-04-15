@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historias Contadas | Player</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Este panel se rellenará dinámicamente con JS leyendo Firebase -->
+    <main class="player-container" id="app-container">
+        <!-- Logo del Cliente (se actualizará dinámicamente) -->
+        <header class="client-header">
+            <img src="" alt="Client Logo" id="client-logo" class="logo hidden">
+        </header>
+
+        <!-- Información de la Historia -->
+        <section class="story-info">
+            <h1 id="story-title">Cargando Historia...</h1>
+            <p id="client-name" class="subtitle"></p>
+        </section>
+
+        <!-- Selector de Idiomas -->
+        <div class="lang-selector">
+            <button id="btn-lang-es" class="lang-btn active">ES</button>
+            <button id="btn-lang-en" class="lang-btn">EN</button>
+        </div>
+
+        <!-- Reproductor de Audio Visual -->
+        <div class="audio-player-wrapper">
+            <!-- Audio Tag (Oculto) -->
+            <audio id="audio-element" preload="metadata"></audio>
+            
+            <div class="custom-player">
+                <button id="play-pause-btn" class="play-btn">
+                    <!-- Icono SVG Play -->
+                    <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M8 5v14l11-7z"/></svg>
+                    <!-- Icono SVG Pause -->
+                    <svg id="icon-pause" class="hidden" viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <div class="timeline-container" id="timeline">
+                    <div class="timeline-progress" id="progress-bar"></div>
+                    <!-- Controlador para arrastrar -->
+                    <div class="timeline-thumb" id="progress-thumb"></div>
+                </div>
+                <div class="time-displays">
+                    <span id="current-time">0:00</span>
+                    <span id="duration-time">0:00</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cargador de Supabase y Lógica -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
