@@ -33,8 +33,11 @@ const btnSaveBrand = document.getElementById("btn-save-brand");
 // DOM Elements: Stories
 const storyForm = document.getElementById("story-form");
 const storyTitleInput = document.getElementById("story-title-input");
+const storyImageInput = document.getElementById("story-image-input");
 const storyEsInput = document.getElementById("story-es-input");
 const storyEnInput = document.getElementById("story-en-input");
+const storyTranscriptionEs = document.getElementById("story-transcription-es");
+const storyTranscriptionEn = document.getElementById("story-transcription-en");
 const btnUploadStory = document.getElementById("btn-upload-story");
 const storiesList = document.getElementById("stories-list");
 
@@ -267,11 +270,16 @@ async function loadStories() {
         
         const playerUrl = `${window.location.origin}${window.location.pathname.replace('/admin.html', '/index.html')}?id=${story.id}`;
 
+        const storyImagePreview = story.image_url ? `<img src="${story.image_url}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;margin-right:10px;">` : '';
+
         li.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                <div>
-                    <strong>${story.title}</strong>
-                    <div style="font-size:0.8rem; color:#aaa; margin-top:4px;">ID: ${story.id}</div>
+                <div style="display:flex; align-items:center;">
+                    ${storyImagePreview}
+                    <div>
+                        <strong>${story.title}</strong>
+                        <div style="font-size:0.8rem; color:#aaa; margin-top:4px;">ID: ${story.id}</div>
+                    </div>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-qr" data-url="${playerUrl}">Ver QR</button>
@@ -287,12 +295,24 @@ async function loadStories() {
                     <input type="text" class="form-control edit-title" value="${story.title}">
                 </div>
                 <div class="form-group">
+                    <label>Nueva Foto — dejar vacío para mantener la actual</label>
+                    <input type="file" class="form-control edit-image" accept="image/*">
+                </div>
+                <div class="form-group">
                     <label>Nuevo Audio Español (MP3) — dejar vacío para mantener el actual</label>
                     <input type="file" class="form-control edit-audio-es" accept="audio/*">
                 </div>
                 <div class="form-group">
                     <label>Nuevo Audio Inglés (MP3) — dejar vacío para mantener el actual</label>
                     <input type="file" class="form-control edit-audio-en" accept="audio/*">
+                </div>
+                <div class="form-group">
+                    <label>Transcripción Español</label>
+                    <textarea class="form-control edit-transcription-es" rows="3">${story.transcription_es || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Transcripción Inglés</label>
+                    <textarea class="form-control edit-transcription-en" rows="3">${story.transcription_en || ''}</textarea>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-save-edit">💾 Guardar Cambios</button>
@@ -338,10 +358,27 @@ async function loadStories() {
 
             try {
                 const newTitle = li.querySelector(".edit-title").value;
+                const newImage = li.querySelector(".edit-image").files[0];
                 const newFileEs = li.querySelector(".edit-audio-es").files[0];
                 const newFileEn = li.querySelector(".edit-audio-en").files[0];
+                const newTransEs = li.querySelector(".edit-transcription-es").value;
+                const newTransEn = li.querySelector(".edit-transcription-en").value;
 
-                let updateData = { title: newTitle };
+                let updateData = {
+                    title: newTitle,
+                    transcription_es: newTransEs || null,
+                    transcription_en: newTransEn || null
+                };
+
+                // Subir nueva imagen si se seleccionó
+                if (newImage) {
+                    const imgExt = newImage.name.split('.').pop();
+                    const imgPath = `images/${currentProjectId}/${story.id}.${imgExt}`;
+                    await supabase.storage.from('historias').remove([imgPath]);
+                    const { error: errImg } = await supabase.storage.from('historias').upload(imgPath, newImage);
+                    if (errImg) throw errImg;
+                    updateData.image_url = supabase.storage.from('historias').getPublicUrl(imgPath).data.publicUrl;
+                }
 
                 // Subir nuevo audio ES si se seleccionó
                 if (newFileEs) {
@@ -403,11 +440,14 @@ storyForm.addEventListener("submit", async (e) => {
 
     try {
         const title = storyTitleInput.value;
+        const fileImage = storyImageInput.files[0];
         const fileEs = storyEsInput.files[0];
         const fileEn = storyEnInput.files[0];
+        const transcriptionEs = storyTranscriptionEs.value;
+        const transcriptionEn = storyTranscriptionEn.value;
 
         if (!title || !fileEs || !fileEn) {
-            alert("Rellena todos los campos de audio.");
+            alert("Rellena el título y los dos archivos de audio.");
             return;
         }
 
@@ -432,13 +472,26 @@ storyForm.addEventListener("submit", async (e) => {
         if (errEn) throw errEn;
         const urlEn = supabase.storage.from('historias').getPublicUrl(pathEn).data.publicUrl;
 
-        // 4. Update story with final URLs and original title
+        // 4. Upload image if provided
+        let imageUrl = null;
+        if (fileImage) {
+            const imgExt = fileImage.name.split('.').pop();
+            const imgPath = `images/${currentProjectId}/${storyId}.${imgExt}`;
+            const { error: errImg } = await supabase.storage.from('historias').upload(imgPath, fileImage);
+            if (errImg) throw errImg;
+            imageUrl = supabase.storage.from('historias').getPublicUrl(imgPath).data.publicUrl;
+        }
+
+        // 5. Update story with final URLs, image, transcriptions and original title
         const { error: updateError } = await supabase
             .from('stories')
             .update({
                 title: title,
                 audio_es_url: urlEs,
-                audio_en_url: urlEn
+                audio_en_url: urlEn,
+                image_url: imageUrl,
+                transcription_es: transcriptionEs || null,
+                transcription_en: transcriptionEn || null
             })
             .eq('id', storyId);
 

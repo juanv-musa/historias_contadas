@@ -21,6 +21,11 @@
             <img src="" alt="Client Logo" id="client-logo" class="logo hidden">
         </header>
 
+        <!-- Imagen de la Historia -->
+        <div class="story-image-wrapper" id="story-image-wrapper" style="display:none;">
+            <img id="story-image" class="story-image" alt="Imagen de la historia">
+        </div>
+
         <!-- Información de la Historia -->
         <section class="story-info">
             <h1 id="story-title">Cargando Historia...</h1>
@@ -54,6 +59,16 @@
                     <span id="current-time">0:00</span>
                     <span id="duration-time">0:00</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- Transcripción -->
+        <div class="transcription-wrapper" id="transcription-wrapper" style="display:none;">
+            <button id="btn-toggle-transcription" class="btn-transcription">
+                📄 Ver Transcripción
+            </button>
+            <div id="transcription-content" class="transcription-content hidden">
+                <p id="transcription-text"></p>
             </div>
         </div>
     </main>

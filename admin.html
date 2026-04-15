@@ -217,12 +217,24 @@
                         <input type="text" id="story-title-input" class="form-control" required>
                     </div>
                     <div class="form-group">
+                        <label>Foto de la Historia (JPG/PNG)</label>
+                        <input type="file" id="story-image-input" class="form-control" accept="image/*">
+                    </div>
+                    <div class="form-group">
                         <label>Audio Español (MP3)</label>
                         <input type="file" id="story-es-input" class="form-control" accept="audio/*">
                     </div>
                     <div class="form-group">
                         <label>Audio Inglés (MP3)</label>
                         <input type="file" id="story-en-input" class="form-control" accept="audio/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Transcripción Español</label>
+                        <textarea id="story-transcription-es" class="form-control" rows="4" placeholder="Texto de la historia en español..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Transcripción Inglés</label>
+                        <textarea id="story-transcription-en" class="form-control" rows="4" placeholder="Story text in English..."></textarea>
                     </div>
                     <button type="submit" id="btn-upload-story" class="btn">Subir Historia</button>
                 </form>

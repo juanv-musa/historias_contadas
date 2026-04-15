@@ -18,6 +18,13 @@ const progressBar = document.getElementById("progress-bar");
 const currentTimeDisplay = document.getElementById("current-time");
 const durationTimeDisplay = document.getElementById("duration-time");
 
+const storyImageWrapper = document.getElementById("story-image-wrapper");
+const storyImage = document.getElementById("story-image");
+const transcriptionWrapper = document.getElementById("transcription-wrapper");
+const btnToggleTranscription = document.getElementById("btn-toggle-transcription");
+const transcriptionContent = document.getElementById("transcription-content");
+const transcriptionText = document.getElementById("transcription-text");
+
 let storyData = null;
 let currentLang = 'ES';
 
@@ -61,11 +68,20 @@ async function init() {
             applyBrand(storyData.project);
         }
 
-        // 4. Render initial info
-        storyTitle.innerText = storyData.title;
-        setAudioSource('ES'); // Inicia en Español por defecto
+        // 4. Show story image if exists
+        if (storyData.image_url) {
+            storyImage.src = storyData.image_url;
+            storyImageWrapper.style.display = 'block';
+        }
 
-        // Setup Player Listeners
+        // 5. Render initial info
+        storyTitle.innerText = storyData.title;
+        setAudioSource('ES');
+
+        // 6. Setup transcription
+        setupTranscription();
+
+        // 7. Setup Player Listeners
         setupPlayer();
         
     } catch (error) {
@@ -123,10 +139,35 @@ function setAudioSource(lang) {
     if (wasPlaying) {
         audioElement.play();
     }
+
+    updateTranscriptionText();
 }
 
 btnLangEs.addEventListener("click", () => setAudioSource('ES'));
 btnLangEn.addEventListener("click", () => setAudioSource('EN'));
+
+// Transcription
+function setupTranscription() {
+    const hasTranscription = storyData.transcription_es || storyData.transcription_en;
+    if (!hasTranscription) return;
+
+    transcriptionWrapper.style.display = 'block';
+    updateTranscriptionText();
+
+    btnToggleTranscription.addEventListener("click", () => {
+        const isHidden = transcriptionContent.classList.contains("hidden");
+        transcriptionContent.classList.toggle("hidden");
+        btnToggleTranscription.innerText = isHidden ? '📄 Ocultar Transcripción' : '📄 Ver Transcripción';
+    });
+}
+
+function updateTranscriptionText() {
+    if (currentLang === 'ES') {
+        transcriptionText.innerText = storyData.transcription_es || storyData.transcription_en || '';
+    } else {
+        transcriptionText.innerText = storyData.transcription_en || storyData.transcription_es || '';
+    }
+}
 
 // Player Functions
 function setupPlayer() {
