@@ -17,3 +17,7 @@ vercel
 https://historias-contadas.vercel.app/admin.html
 
 https://historias-contadas.vercel.app
+
+
+cron-job.org
+para hacer que pique uan vez al dia y no se pare supabase
