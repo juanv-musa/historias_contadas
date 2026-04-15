@@ -25,6 +25,10 @@ const btnToggleTranscription = document.getElementById("btn-toggle-transcription
 const transcriptionContent = document.getElementById("transcription-content");
 const transcriptionText = document.getElementById("transcription-text");
 
+const footerLogosContainer = document.getElementById("footer-logos-container");
+const footerLogosImg = document.getElementById("footer-logos-img");
+const currentYearSpan = document.getElementById("current-year");
+
 let storyData = null;
 let currentLang = 'ES';
 
@@ -49,7 +53,8 @@ async function init() {
                 project:projects (
                     name,
                     primary_color,
-                    logo_url
+                    logo_url,
+                    footer_logos_url
                 )
             `)
             .eq('id', storyId)
@@ -68,7 +73,12 @@ async function init() {
             applyBrand(storyData.project);
         }
 
-        // 4. Show story image if exists
+        // 4. Set current year
+        if (currentYearSpan) {
+            currentYearSpan.innerText = new Date().getFullYear();
+        }
+
+        // 5. Show story image if exists
         if (storyData.image_url) {
             storyImage.src = storyData.image_url;
             storyImageWrapper.style.display = 'block';
@@ -110,6 +120,13 @@ function applyBrand(brand) {
         const root = document.documentElement;
         root.style.setProperty('--brand-color', brand.primary_color);
         root.style.setProperty('--brand-color-dark', adjustColor(brand.primary_color, -20));
+    }
+
+    if (brand.footer_logos_url) {
+        footerLogosImg.src = brand.footer_logos_url;
+        footerLogosContainer.classList.remove("hidden");
+    } else {
+        footerLogosContainer.classList.add("hidden");
     }
 }
 

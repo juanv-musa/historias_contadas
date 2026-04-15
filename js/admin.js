@@ -28,6 +28,8 @@ const clientNameInput = document.getElementById("client-name-input");
 const clientColorInput = document.getElementById("client-color-input");
 const clientLogoInput = document.getElementById("client-logo-input");
 const logoPreview = document.getElementById("logo-preview");
+const footerLogosInput = document.getElementById("footer-logos-input");
+const footerLogosPreview = document.getElementById("footer-logos-preview");
 const btnSaveBrand = document.getElementById("btn-save-brand");
 
 // DOM Elements: Stories
@@ -174,6 +176,13 @@ function openProject(project) {
         logoPreview.classList.add("hidden");
     }
 
+    if (project.footer_logos_url) {
+        footerLogosPreview.src = project.footer_logos_url;
+        footerLogosPreview.classList.remove("hidden");
+    } else {
+        footerLogosPreview.classList.add("hidden");
+    }
+
     showView(projectDetailView);
     loadStories();
 }
@@ -195,8 +204,9 @@ brandForm.addEventListener("submit", async (e) => {
 
     try {
         let finalLogoUrl = logoPreview.src;
+        let finalFooterLogosUrl = footerLogosPreview.src;
         
-        // Si hay archivo nuevo, lo subimos
+        // Si hay logo principal nuevo
         if (clientLogoInput.files.length > 0) {
             const file = clientLogoInput.files[0];
             const fileExt = file.name.split('.').pop();
@@ -218,13 +228,36 @@ brandForm.addEventListener("submit", async (e) => {
             logoPreview.classList.remove("hidden");
         }
 
+        // Si hay logos de pie nuevos
+        if (footerLogosInput.files.length > 0) {
+            const file = footerLogosInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `footer_${Date.now()}.${fileExt}`;
+            const filePath = `logos/${currentProjectId}/${fileName}`;
+            
+            const { error: uploadError } = await supabase.storage
+                .from('historias')
+                .upload(filePath, file);
+                
+            if (uploadError) throw uploadError;
+            
+            const { data } = supabase.storage
+                .from('historias')
+                .getPublicUrl(filePath);
+                
+            finalFooterLogosUrl = data.publicUrl;
+            footerLogosPreview.src = finalFooterLogosUrl;
+            footerLogosPreview.classList.remove("hidden");
+        }
+
         // Actualizamos base de datos
         const { error: updateError } = await supabase
             .from('projects')
             .update({
                 name: clientNameInput.value,
                 primary_color: clientColorInput.value,
-                logo_url: finalLogoUrl.includes('http') ? finalLogoUrl : null
+                logo_url: finalLogoUrl.includes('http') ? finalLogoUrl : null,
+                footer_logos_url: finalFooterLogosUrl.includes('http') ? finalFooterLogosUrl : null
             })
             .eq('id', currentProjectId);
 

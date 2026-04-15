@@ -199,10 +199,17 @@
                         <input type="color" id="client-color-input" class="form-control" style="height: 50px;">
                     </div>
                     <div class="form-group">
-                        <label>Subir Logo (PNG/JPG)</label>
+                        <label>Subir Logo Principal (PNG/JPG)</label>
                         <input type="file" id="client-logo-input" class="form-control" accept="image/*">
                     </div>
                     <img id="logo-preview" class="hidden" style="max-height: 50px; margin-bottom: 1rem; background: white; padding: 5px; border-radius: 4px;" />
+                    
+                    <div class="form-group">
+                        <label>Logos de Pie (Sponsors/Patrocinadores)</label>
+                        <input type="file" id="footer-logos-input" class="form-control" accept="image/*">
+                    </div>
+                    <img id="footer-logos-preview" class="hidden" style="max-height: 40px; margin-bottom: 1rem; background: white; padding: 5px; border-radius: 4px;" />
+
                     <button type="submit" id="btn-save-brand" class="btn">Guardar Marca</button>
                 </form>
             </div>
