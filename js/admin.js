@@ -302,7 +302,9 @@ async function loadStories() {
         li.style.flexDirection = "column";
         li.style.alignItems = "stretch";
         
-        const playerUrl = `${window.location.origin}${window.location.pathname.replace('/admin.html', '/index.html')}?id=${story.id}`;
+        // Generar URL del Reproductor (usando Slug si existe, o ID si no)
+        const baseUrl = window.location.origin;
+        const playerUrl = story.slug ? `${baseUrl}/${story.slug}` : `${baseUrl}/?id=${story.id}`;
 
         const storyImagePreview = story.image_url ? `<img src="${story.image_url}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;margin-right:10px;">` : '';
 
