@@ -43,7 +43,7 @@
         </div>
 
         <!-- Reproductor de Audio Visual -->
-        <div class="audio-player-wrapper">
+        <div id="audio-player-wrapper" class="audio-player-wrapper">
             <!-- Audio Tag (Oculto) -->
             <audio id="audio-element" preload="metadata"></audio>
             
@@ -62,6 +62,21 @@
                 <div class="time-displays">
                     <span id="current-time">0:00</span>
                     <span id="duration-time">0:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualizador de PDF -->
+        <div id="pdf-player-wrapper" class="pdf-player-wrapper hidden">
+            <div class="pdf-container">
+                <div class="pdf-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+                        <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9h1v1H9V9zm5.5 1h1v2h-1v-2zM2 6v14c0 1.1.9 2 2 2h14v-1.5H4V6H2z"/>
+                    </svg>
+                </div>
+                <div class="pdf-actions">
+                    <a id="btn-view-pdf" href="" target="_blank" class="btn-main">Leer Documento</a>
+                    <a id="btn-download-pdf" href="" download class="btn-secondary">Descargar PDF</a>
                 </div>
             </div>
         </div>

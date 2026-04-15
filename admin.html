@@ -232,6 +232,13 @@
                         <input type="text" id="story-title-en-input" class="form-control">
                     </div>
                     <div class="form-group">
+                        <label>Tipo de Contenido</label>
+                        <select id="story-type-input" class="form-control">
+                            <option value="audio">🎵 Audio</option>
+                            <option value="pdf">📄 Documento PDF</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Slug / ID Personalizado (opcional, ej: castellar01)</label>
                         <input type="text" id="story-slug-input" class="form-control" placeholder="Si ya tienes QRs impresos...">
                     </div>
@@ -239,17 +246,33 @@
                         <label>Foto de la Historia (JPG/PNG)</label>
                         <input type="file" id="story-image-input" class="form-control" accept="image/*">
                     </div>
-                    <div class="form-group">
-                        <label>Audio Español (MP3)</label>
-                        <input type="file" id="story-es-input" class="form-control" accept="audio/*">
+                    <!-- Sección: Campos de Audio -->
+                    <div id="fields-audio">
+                        <div class="form-group">
+                            <label>Audio Español (MP3)</label>
+                            <input type="file" id="story-es-input" class="form-control" accept="audio/*">
+                        </div>
+                        <div class="form-group">
+                            <label>Audio Inglés (MP3)</label>
+                            <input type="file" id="story-en-input" class="form-control" accept="audio/*">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Audio Inglés (MP3)</label>
-                        <input type="file" id="story-en-input" class="form-control" accept="audio/*">
+
+                    <!-- Sección: Campos de PDF -->
+                    <div id="fields-pdf" class="hidden">
+                        <div class="form-group">
+                            <label>Archivo PDF (Español)</label>
+                            <input type="file" id="story-pdf-es-input" class="form-control" accept="application/pdf">
+                        </div>
+                        <div class="form-group">
+                            <label>Archivo PDF (Inglés)</label>
+                            <input type="file" id="story-pdf-en-input" class="form-control" accept="application/pdf">
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label>Transcripción Español</label>
-                        <textarea id="story-transcription-es" class="form-control" rows="4" placeholder="Texto de la historia en español..."></textarea>
+                        <textarea id="story-transcription-es" class="form-control" rows="4" placeholder="Texto de la historia en español o descripción del PDF..."></textarea>
                     </div>
                     <div class="form-group">
                         <label>Transcripción Inglés</label>

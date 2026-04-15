@@ -29,6 +29,12 @@ const footerLogosContainer = document.getElementById("footer-logos-container");
 const footerLogosImg = document.getElementById("footer-logos-img");
 const currentYearSpan = document.getElementById("current-year");
 
+// PDF Elements
+const audioPlayerWrapper = document.getElementById("audio-player-wrapper");
+const pdfPlayerWrapper = document.getElementById("pdf-player-wrapper");
+const btnViewPdf = document.getElementById("btn-view-pdf");
+const btnDownloadPdf = document.getElementById("btn-download-pdf");
+
 let storyData = null;
 let currentLang = 'ES';
 
@@ -125,13 +131,20 @@ async function init() {
 
         // 5. Render initial info
         updateLanguageUI();
-        setAudioSource('ES');
+        
+        if (storyData.content_type === 'pdf') {
+            audioPlayerWrapper.classList.add("hidden");
+            pdfPlayerWrapper.classList.remove("hidden");
+            setContentSource('ES');
+        } else {
+            audioPlayerWrapper.classList.remove("hidden");
+            pdfPlayerWrapper.classList.add("hidden");
+            setContentSource('ES');
+            setupPlayer();
+        }
 
         // 6. Setup transcription
         setupTranscription();
-
-        // 7. Setup Player Listeners
-        setupPlayer();
         
     } catch (error) {
         console.error("Error loading app", error);
@@ -213,26 +226,36 @@ function getContrastYIQ(hexcolor){
     return (yiq >= 128) ? 'black' : 'white';
 }
 
-function setAudioSource(lang) {
+function setContentSource(lang) {
     currentLang = lang;
-    const currentTime = audioElement.currentTime;
-    const wasPlaying = !audioElement.paused;
-
-    if (lang === 'ES') {
-        audioElement.src = storyData.audio_es_url;
-        btnLangEs.classList.add("active");
-        btnLangEn.classList.remove("active");
-    } else {
-        audioElement.src = storyData.audio_en_url;
-        btnLangEn.classList.add("active");
-        btnLangEs.classList.remove("active");
-    }
-
-    audioElement.load();
-    audioElement.currentTime = currentTime;
     
-    if (wasPlaying) {
-        audioElement.play();
+    if (storyData.content_type === 'pdf') {
+        const url = (lang === 'ES') ? storyData.pdf_es_url : storyData.pdf_en_url;
+        btnViewPdf.href = url;
+        btnDownloadPdf.href = url;
+        
+        btnLangEs.classList.toggle("active", lang === 'ES');
+        btnLangEn.classList.toggle("active", lang === 'EN');
+    } else {
+        const currentTime = audioElement.currentTime;
+        const wasPlaying = !audioElement.paused;
+    
+        if (lang === 'ES') {
+            audioElement.src = storyData.audio_es_url;
+            btnLangEs.classList.add("active");
+            btnLangEn.classList.remove("active");
+        } else {
+            audioElement.src = storyData.audio_en_url;
+            btnLangEn.classList.add("active");
+            btnLangEs.classList.remove("active");
+        }
+    
+        audioElement.load();
+        audioElement.currentTime = currentTime;
+        
+        if (wasPlaying) {
+            audioElement.play();
+        }
     }
 
     updateTranscriptionText();
@@ -257,10 +280,15 @@ function updateLanguageUI() {
         const isHidden = transcriptionContent.classList.contains("hidden");
         btnToggleTranscription.innerText = isHidden ? langSet.transcriptionShow : langSet.transcriptionHide;
     }
+
+    if (storyData.content_type === 'pdf') {
+        btnViewPdf.innerText = (currentLang === 'ES') ? "📄 Leer Documento" : "📄 Read Document";
+        btnDownloadPdf.innerText = (currentLang === 'ES') ? "💾 Descargar PDF" : "💾 Download PDF";
+    }
 }
 
-btnLangEs.addEventListener("click", () => setAudioSource('ES'));
-btnLangEn.addEventListener("click", () => setAudioSource('EN'));
+btnLangEs.addEventListener("click", () => setContentSource('ES'));
+btnLangEn.addEventListener("click", () => setContentSource('EN'));
 
 // Transcription
 function setupTranscription() {

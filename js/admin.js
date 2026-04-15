@@ -35,12 +35,18 @@ const btnSaveBrand = document.getElementById("btn-save-brand");
 
 // DOM Elements: Stories
 const storyForm = document.getElementById("story-form");
-const storyTitleInput = document.getElementById("story-title-input");
 const storyTitleEnInput = document.getElementById("story-title-en-input");
+const storyTypeInput = document.getElementById("story-type-input");
 const storySlugInput = document.getElementById("story-slug-input");
 const storyImageInput = document.getElementById("story-image-input");
+
+const fieldsAudio = document.getElementById("fields-audio");
+const fieldsPdf = document.getElementById("fields-pdf");
+
 const storyEsInput = document.getElementById("story-es-input");
 const storyEnInput = document.getElementById("story-en-input");
+const storyPdfEsInput = document.getElementById("story-pdf-es-input");
+const storyPdfEnInput = document.getElementById("story-pdf-en-input");
 const storyTranscriptionEs = document.getElementById("story-transcription-es");
 const storyTranscriptionEn = document.getElementById("story-transcription-en");
 const btnUploadStory = document.getElementById("btn-upload-story");
@@ -312,12 +318,14 @@ async function loadStories() {
 
         const storyImagePreview = story.image_url ? `<img src="${story.image_url}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;margin-right:10px;">` : '';
 
+        const typeIcon = story.content_type === 'pdf' ? '📄' : '🎵';
+
         li.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                 <div style="display:flex; align-items:center;">
                     ${storyImagePreview}
                     <div>
-                        <strong>${story.title}</strong>
+                        <strong>${typeIcon} ${story.title}</strong>
                         <div style="font-size:0.8rem; color:#aaa; margin-top:4px;">ID: ${story.id} ${story.slug ? '| Slug: ' + story.slug : ''}</div>
                     </div>
                 </div>
@@ -346,14 +354,26 @@ async function loadStories() {
                     <label>Nueva Foto — dejar vacío para mantener la actual</label>
                     <input type="file" class="form-control edit-image" accept="image/*">
                 </div>
+                
+                ${story.content_type === 'audio' ? `
                 <div class="form-group">
-                    <label>Nuevo Audio Español (MP3) — dejar vacío para mantener el actual</label>
+                    <label>Nuevo Audio Español (MP3)</label>
                     <input type="file" class="form-control edit-audio-es" accept="audio/*">
                 </div>
                 <div class="form-group">
-                    <label>Nuevo Audio Inglés (MP3) — dejar vacío para mantener el actual</label>
+                    <label>Nuevo Audio Inglés (MP3)</label>
                     <input type="file" class="form-control edit-audio-en" accept="audio/*">
                 </div>
+                ` : `
+                <div class="form-group">
+                    <label>Nuevo PDF Español</label>
+                    <input type="file" class="form-control edit-pdf-es" accept="application/pdf">
+                </div>
+                <div class="form-group">
+                    <label>Nuevo PDF Inglés</label>
+                    <input type="file" class="form-control edit-pdf-en" accept="application/pdf">
+                </div>
+                `}
                 <div class="form-group">
                     <label>Transcripción Español</label>
                     <textarea class="form-control edit-transcription-es" rows="3">${story.transcription_es || ''}</textarea>
@@ -407,13 +427,6 @@ async function loadStories() {
             try {
                 const newTitle = li.querySelector(".edit-title").value;
                 const newTitleEn = li.querySelector(".edit-title-en").value;
-                const newSlug = li.querySelector(".edit-slug").value;
-                const newImage = li.querySelector(".edit-image").files[0];
-                const newFileEs = li.querySelector(".edit-audio-es").files[0];
-                const newFileEn = li.querySelector(".edit-audio-en").files[0];
-                const newTransEs = li.querySelector(".edit-transcription-es").value;
-                const newTransEn = li.querySelector(".edit-transcription-en").value;
-
                 let updateData = {
                     title: newTitle,
                     title_en: newTitleEn || null,
@@ -433,22 +446,40 @@ async function loadStories() {
                 }
 
                 // Subir nuevo audio ES si se seleccionó
-                if (newFileEs) {
-                    const pathEs = `audios/${currentProjectId}/${story.id}_es.mp3`;
-                    // Intentar borrar el anterior y subir el nuevo
-                    await supabase.storage.from('historias').remove([pathEs]);
-                    const { error: errEs } = await supabase.storage.from('historias').upload(pathEs, newFileEs);
-                    if (errEs) throw errEs;
-                    updateData.audio_es_url = supabase.storage.from('historias').getPublicUrl(pathEs).data.publicUrl;
-                }
+                if (story.content_type === 'audio') {
+                    const newFileEs = li.querySelector(".edit-audio-es").files[0];
+                    const newFileEn = li.querySelector(".edit-audio-en").files[0];
 
-                // Subir nuevo audio EN si se seleccionó
-                if (newFileEn) {
-                    const pathEn = `audios/${currentProjectId}/${story.id}_en.mp3`;
-                    await supabase.storage.from('historias').remove([pathEn]);
-                    const { error: errEn } = await supabase.storage.from('historias').upload(pathEn, newFileEn);
-                    if (errEn) throw errEn;
-                    updateData.audio_en_url = supabase.storage.from('historias').getPublicUrl(pathEn).data.publicUrl;
+                    if (newFileEs) {
+                        const pathEs = `audios/${currentProjectId}/${story.id}_es.mp3`;
+                        await supabase.storage.from('historias').remove([pathEs]);
+                        await supabase.storage.from('historias').upload(pathEs, newFileEs);
+                        updateData.audio_es_url = supabase.storage.from('historias').getPublicUrl(pathEs).data.publicUrl;
+                    }
+
+                    if (newFileEn) {
+                        const pathEn = `audios/${currentProjectId}/${story.id}_en.mp3`;
+                        await supabase.storage.from('historias').remove([pathEn]);
+                        await supabase.storage.from('historias').upload(pathEn, newFileEn);
+                        updateData.audio_en_url = supabase.storage.from('historias').getPublicUrl(pathEn).data.publicUrl;
+                    }
+                } else {
+                    const newPdfEs = li.querySelector(".edit-pdf-es").files[0];
+                    const newPdfEn = li.querySelector(".edit-pdf-en").files[0];
+
+                    if (newPdfEs) {
+                        const pathPdfEs = `pdfs/${currentProjectId}/${story.id}_es.pdf`;
+                        await supabase.storage.from('historias').remove([pathPdfEs]);
+                        await supabase.storage.from('historias').upload(pathPdfEs, newPdfEs);
+                        updateData.pdf_es_url = supabase.storage.from('historias').getPublicUrl(pathPdfEs).data.publicUrl;
+                    }
+
+                    if (newPdfEn) {
+                        const pathPdfEn = `pdfs/${currentProjectId}/${story.id}_en.pdf`;
+                        await supabase.storage.from('historias').remove([pathPdfEn]);
+                        await supabase.storage.from('historias').upload(pathPdfEn, newPdfEn);
+                        updateData.pdf_en_url = supabase.storage.from('historias').getPublicUrl(pathPdfEn).data.publicUrl;
+                    }
                 }
 
                 // Actualizar en la base de datos
@@ -484,23 +515,41 @@ async function loadStories() {
     });
 }
 
+// Switching Story Types
+storyTypeInput.addEventListener("change", () => {
+    if (storyTypeInput.value === 'audio') {
+        fieldsAudio.classList.remove("hidden");
+        fieldsPdf.classList.add("hidden");
+    } else {
+        fieldsAudio.classList.add("hidden");
+        fieldsPdf.classList.remove("hidden");
+    }
+});
+
 storyForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const originalText = btnUploadStory.innerText;
-    btnUploadStory.innerText = "Subiendo (no cierres la pestaña)...";
+    btnUploadStory.innerText = i18n[currentLang] ? "Subiendo..." : "Subiendo (no cierres la pestaña)...";
     btnUploadStory.disabled = true;
 
     try {
         const title = storyTitleInput.value;
+        const contentType = storyTypeInput.value;
         const fileImage = storyImageInput.files[0];
-        const fileEs = storyEsInput.files[0];
-        const fileEn = storyEnInput.files[0];
         const transcriptionEs = storyTranscriptionEs.value;
         const transcriptionEn = storyTranscriptionEn.value;
 
-        if (!title || !fileEs || !fileEn) {
-            alert("Rellena el título y los dos archivos de audio.");
-            return;
+        // Validación según tipo
+        if (contentType === 'audio') {
+            if (!storyEsInput.files[0] || !storyEnInput.files[0]) {
+                alert("Por favor, sube ambos archivos de audio (ES y EN).");
+                return;
+            }
+        } else {
+            if (!storyPdfEsInput.files[0] || !storyPdfEnInput.files[0]) {
+                alert("Por favor, sube ambos archivos PDF (ES y EN).");
+                return;
+            }
         }
 
         // 1. Insert placeholder to get ID
@@ -510,53 +559,66 @@ storyForm.addEventListener("submit", async (e) => {
             .insert([{ 
                 project_id: currentProjectId, 
                 title: title + " (Subiendo...)",
-                slug: slug || null
+                slug: slug || null,
+                content_type: contentType
             }])
             .select();
             
         if (insertError) throw insertError;
         const storyId = insertedData[0].id;
 
-        // 2. Upload ES
-        const pathEs = `audios/${currentProjectId}/${storyId}_es.mp3`;
-        const { error: errEs } = await supabase.storage.from('historias').upload(pathEs, fileEs);
-        if (errEs) throw errEs;
-        const urlEs = supabase.storage.from('historias').getPublicUrl(pathEs).data.publicUrl;
+        let updateData = {
+            title: title,
+            title_en: storyTitleEnInput.value || null,
+            transcription_es: transcriptionEs || null,
+            transcription_en: transcriptionEn || null
+        };
 
-        // 3. Upload EN
-        const pathEn = `audios/${currentProjectId}/${storyId}_en.mp3`;
-        const { error: errEn } = await supabase.storage.from('historias').upload(pathEn, fileEn);
-        if (errEn) throw errEn;
-        const urlEn = supabase.storage.from('historias').getPublicUrl(pathEn).data.publicUrl;
+        // 2. Upload Files based on type
+        if (contentType === 'audio') {
+            const fileEs = storyEsInput.files[0];
+            const fileEn = storyEnInput.files[0];
+            
+            const pathEs = `audios/${currentProjectId}/${storyId}_es.mp3`;
+            await supabase.storage.from('historias').upload(pathEs, fileEs);
+            updateData.audio_es_url = supabase.storage.from('historias').getPublicUrl(pathEs).data.publicUrl;
 
-        // 4. Upload image if provided
-        let imageUrl = null;
+            const pathEn = `audios/${currentProjectId}/${storyId}_en.mp3`;
+            await supabase.storage.from('historias').upload(pathEn, fileEn);
+            updateData.audio_en_url = supabase.storage.from('historias').getPublicUrl(pathEn).data.publicUrl;
+        } else {
+            const filePdfEs = storyPdfEsInput.files[0];
+            const filePdfEn = storyPdfEnInput.files[0];
+
+            const pathPdfEs = `pdfs/${currentProjectId}/${storyId}_es.pdf`;
+            await supabase.storage.from('historias').upload(pathPdfEs, filePdfEs);
+            updateData.pdf_es_url = supabase.storage.from('historias').getPublicUrl(pathPdfEs).data.publicUrl;
+
+            const pathPdfEn = `pdfs/${currentProjectId}/${storyId}_en.pdf`;
+            await supabase.storage.from('historias').upload(pathPdfEn, filePdfEn);
+            updateData.pdf_en_url = supabase.storage.from('historias').getPublicUrl(pathPdfEn).data.publicUrl;
+        }
+
+        // 3. Upload image if provided
         if (fileImage) {
             const imgExt = fileImage.name.split('.').pop();
             const imgPath = `images/${currentProjectId}/${storyId}.${imgExt}`;
-            const { error: errImg } = await supabase.storage.from('historias').upload(imgPath, fileImage);
-            if (errImg) throw errImg;
-            imageUrl = supabase.storage.from('historias').getPublicUrl(imgPath).data.publicUrl;
+            await supabase.storage.from('historias').upload(imgPath, fileImage);
+            updateData.image_url = supabase.storage.from('historias').getPublicUrl(imgPath).data.publicUrl;
         }
 
-        // 5. Update story with final URLs, image, transcriptions and original title
+        // 4. Update story with final data
         const { error: updateError } = await supabase
             .from('stories')
-            .update({
-                title: title,
-                title_en: storyTitleEnInput.value || null,
-                audio_es_url: urlEs,
-                audio_en_url: urlEn,
-                image_url: imageUrl,
-                transcription_es: transcriptionEs || null,
-                transcription_en: transcriptionEn || null
-            })
+            .update(updateData)
             .eq('id', storyId);
 
         if (updateError) throw updateError;
 
-        alert("Historia subida con éxito.");
+        alert("¡Historia de tipo " + contentType.toUpperCase() + " subida con éxito!");
         storyForm.reset();
+        fieldsAudio.classList.remove("hidden");
+        fieldsPdf.classList.add("hidden");
         loadStories();
 
     } catch (error) {

@@ -284,3 +284,75 @@ h1 {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* PDF Player Styles */
+.pdf-player-wrapper {
+    margin: 2rem 0;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.pdf-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.pdf-icon {
+    background: var(--brand-color);
+    color: var(--brand-contrast);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.pdf-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.btn-main, .btn-secondary {
+    display: inline-block;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-main {
+    background: var(--brand-color);
+    color: var(--brand-contrast);
+}
+
+.btn-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    filter: brightness(1.1);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background: var(--card-bg);
+    border-color: var(--text-secondary);
+}
