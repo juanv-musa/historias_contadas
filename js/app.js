@@ -53,8 +53,10 @@ async function init() {
 
     try {
         // 2. Fetch Story + Project Join 
-        // Buscamos tanto por ID (UUID) como por Slug personalizado
-        const { data, error } = await supabase
+        // Verificamos si es un UUID válido o un Slug personalizado
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(storyIdOrSlug);
+
+        let query = supabase
             .from('stories')
             .select(`
                 *,
@@ -64,9 +66,16 @@ async function init() {
                     logo_url,
                     footer_logos_url
                 )
-            `)
-            .or(`id.eq.${storyIdOrSlug},slug.eq.${storyIdOrSlug}`)
-            .single();
+            `);
+
+        // Si es UUID buscamos por columna ID, si no, por la columna Slug
+        if (isUUID) {
+            query = query.eq('id', storyIdOrSlug);
+        } else {
+            query = query.eq('slug', storyIdOrSlug);
+        }
+
+        const { data, error } = await query.single();
 
         if (error || !data) {
             console.error(error);
