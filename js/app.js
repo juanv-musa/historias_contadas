@@ -143,19 +143,25 @@ function applyBrand(brand) {
         const bgColor = brand.background_color || '#0f172a';
         root.style.setProperty('--bg-dark', bgColor);
 
-        // Inteligencia de Contraste
-        const isLight = getContrastYIQ(bgColor) === 'black';
-        if (isLight) {
+        // Inteligencia de Contraste Principal (Fondo)
+        const isBgLight = getContrastYIQ(bgColor) === 'black';
+        if (isBgLight) {
             root.style.setProperty('--text-primary', '#0f172a');
-            root.style.setProperty('--text-secondary', '#475569');
-            root.style.setProperty('--card-bg', 'rgba(0, 0, 0, 0.05)');
-            root.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.1)');
+            root.style.setProperty('--text-secondary', '#4b5563');
+            root.style.setProperty('--card-bg', 'rgba(0, 0, 0, 0.04)');
+            root.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.08)');
+            root.style.setProperty('--timeline-bg', 'rgba(0, 0, 0, 0.1)');
         } else {
             root.style.setProperty('--text-primary', '#f8fafc');
             root.style.setProperty('--text-secondary', '#94a3b8');
             root.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.05)');
-            root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.1)');
+            root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.11)');
+            root.style.setProperty('--timeline-bg', 'rgba(255, 255, 255, 0.15)');
         }
+
+        // Contraste sobre el Color de Marca (Botones)
+        const brandContrast = getContrastYIQ(brand.primary_color);
+        root.style.setProperty('--brand-contrast', brandContrast === 'black' ? '#000000' : '#ffffff');
 
         // Fondo dinámico Premium
         const bgDynamic = document.getElementById("bg-dynamic");
