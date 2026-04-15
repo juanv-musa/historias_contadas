@@ -136,7 +136,13 @@ function applyBrand(brand) {
     if (brand.primary_color) {
         const root = document.documentElement;
         root.style.setProperty('--brand-color', brand.primary_color);
-        root.style.setProperty('--brand-color-dark', adjustColor(brand.primary_color, -20));
+        root.style.setProperty('--brand-color-dark', adjustColor(brand.primary_color, -40));
+
+        // Fondo dinámico Premium
+        const bgDynamic = document.getElementById("bg-dynamic");
+        if (bgDynamic) {
+            bgDynamic.style.background = `radial-gradient(circle at 50% 50%, ${brand.primary_color}22 0%, var(--bg-dark) 100%)`;
+        }
     }
 
     if (brand.footer_logos_url) {
