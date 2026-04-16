@@ -52,6 +52,7 @@ const storyTranscriptionEs = document.getElementById("story-transcription-es");
 const storyTranscriptionEn = document.getElementById("story-transcription-en");
 const btnUploadStory = document.getElementById("btn-upload-story");
 const storiesList = document.getElementById("stories-list");
+const adminYear = document.getElementById("admin-year");
 
 // State
 let currentUserId = null;
@@ -70,6 +71,10 @@ supabase.auth.onAuthStateChange((event, session) => {
         showView(loginView);
     }
 });
+
+if (adminYear) {
+    adminYear.innerText = new Date().getFullYear();
+}
 
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -132,10 +137,13 @@ async function loadProjects() {
             : '';
             
         li.innerHTML = `
-            <div>
-                <strong>${project.name}</strong> ${colorDot}
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <strong>${project.name}</strong>
+                <div style="display:flex; align-items:center; gap:15px;">
+                    ${colorDot}
+                    <button class="btn btn-outline" style="padding: 0.4rem 1rem;">Gestionar →</button>
+                </div>
             </div>
-            <button class="btn btn-outline btn-sm">Gestionar →</button>
         `;
         
         li.addEventListener("click", () => openProject(project));
@@ -331,7 +339,7 @@ async function loadStories() {
                     </div>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn btn-qr" data-url="${playerUrl}">Ver QR</button>
+                    <button class="btn btn-primary btn-qr" data-url="${playerUrl}">Ver QR</button>
                     <button class="btn btn-outline btn-edit">✏️ Editar</button>
                     <button class="btn btn-danger btn-delete" data-id="${story.id}">Borrar</button>
                 </div>
