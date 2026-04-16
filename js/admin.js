@@ -138,7 +138,7 @@ async function loadProjects() {
             
         li.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                <strong>${project.name}</strong>
+                <span style="font-weight:600; font-size:1.1rem;">${project.name}</span>
                 <div style="display:flex; align-items:center; gap:15px;">
                     ${colorDot}
                     <button class="btn btn-outline" style="padding: 0.4rem 1rem;">Gestionar →</button>
@@ -334,8 +334,8 @@ async function loadStories() {
                 <div style="display:flex; align-items:center;">
                     ${storyImagePreview}
                     <div>
-                        <strong>${typeIcon} ${story.title}</strong>
-                        <div style="font-size:0.8rem; color:#aaa; margin-top:4px;">ID: ${story.id} ${story.slug ? '| Slug: ' + story.slug : ''}</div>
+                        <div style="font-weight:700; font-size:1rem; color: var(--text-primary);">${typeIcon} ${story.title}</div>
+                        <div style="font-size:0.75rem; color: var(--text-secondary); margin-top:2px;">ID: ...${story.id.slice(-8)} ${story.slug ? '| Slug: ' + story.slug : ''}</div>
                     </div>
                 </div>
                 <div style="display:flex; gap:10px;">
@@ -345,23 +345,29 @@ async function loadStories() {
                 </div>
             </div>
             <div class="qr-container hidden" style="margin-top:1rem; padding:1rem; background:white; border-radius:8px; text-align:center;"></div>
-            <div class="edit-container hidden" style="margin-top:1rem; padding:1rem; background:rgba(255,255,255,0.05); border-radius:8px; border: 1px solid var(--border-color);">
-                <h4 style="margin-bottom:1rem;">Editar Historia</h4>
-                <div class="form-group">
-                    <label>Título (Español)</label>
-                    <input type="text" class="form-control edit-title" value="${story.title}">
-                </div>
-                <div class="form-group">
-                    <label>Título (Inglés)</label>
-                    <input type="text" class="form-control edit-title-en" value="${story.title_en || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Slug / ID Personalizado (ej: castellar01)</label>
-                    <input type="text" class="form-control edit-slug" value="${story.slug || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Nueva Foto — dejar vacío para mantener la actual</label>
-                    <input type="file" class="form-control edit-image" accept="image/*">
+            <div class="edit-container hidden">
+                <h4 style="margin-bottom:1.5rem; color: var(--primary);">✏️ Editar Historia</h4>
+                <div class="grid-2" style="gap: 1.5rem;">
+                    <div>
+                        <div class="form-group">
+                            <label>Título (Español)</label>
+                            <input type="text" class="form-control edit-title" value="${story.title}">
+                        </div>
+                        <div class="form-group">
+                            <label>Título (Inglés)</label>
+                            <input type="text" class="form-control edit-title-en" value="${story.title_en || ''}">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>Slug / URL Personalizada</label>
+                            <input type="text" class="form-control edit-slug" value="${story.slug || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Nueva Foto Portada</label>
+                            <input type="file" class="form-control edit-image" accept="image/*">
+                        </div>
+                    </div>
                 </div>
                 
                 ${story.content_type === 'audio' ? `
@@ -385,14 +391,14 @@ async function loadStories() {
                 `}
                 <div class="form-group">
                     <label>Transcripción Español</label>
-                    <textarea class="form-control edit-transcription-es" rows="3">${story.transcription_es || ''}</textarea>
+                    <textarea class="form-control edit-transcription-es" rows="2">${story.transcription_es || ''}</textarea>
                 </div>
                 <div class="form-group">
                     <label>Transcripción Inglés</label>
-                    <textarea class="form-control edit-transcription-en" rows="3">${story.transcription_en || ''}</textarea>
+                    <textarea class="form-control edit-transcription-en" rows="2">${story.transcription_en || ''}</textarea>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-save-edit">💾 Guardar Cambios</button>
+                <div style="display:flex; gap:10px; margin-top:1.5rem;">
+                    <button class="btn btn-primary btn-save-edit">💾 Guardar Cambios</button>
                     <button class="btn btn-outline btn-cancel-edit">Cancelar</button>
                 </div>
             </div>

@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor | Musaraña Gestión de Museos</title>
     
-    <!-- Google Fonts: Inter & Outfit -->
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,32 +17,73 @@
 
     <style>
         :root {
-            --musarana-color: #3b82f6; /* Azul Corporativo */
-            --musarana-dark: #1e293b;
-            --admin-bg: #0f172a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            /* Palette Musaraña */
+            --primary: #8CC63F;
+            --primary-hover: #7EAD36;
+            --bg-page: #F3F4F6;
+            --bg-surface: rgba(255, 255, 255, 0.85); /* Glassmorphism */
+            --text-primary: #111827;
+            --text-secondary: #4B5563;
+            --danger: #EF4444;
+            --border: rgba(229, 231, 235, 0.7);
+            
+            /* Effects */
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            --radius-xl: 1.5rem;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--admin-bg);
-            color: #f8fafc;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            margin: 0;
+            overflow-x: hidden;
         }
 
-        /* Fondo Dinámico para el Admin */
-        .admin-bg-dynamic {
+        /* Background Blobs (Efecto corporativo Musaraña) */
+        .background-blobs {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -2;
-            background: radial-gradient(circle at 10% 10%, #1e293b 0%, #0f172a 100%);
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4fd 0%, #f6fdfa 100%);
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.5;
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .blob-1 {
+            top: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(140,198,63,0.3) 0%, rgba(140,198,63,0) 70%);
+        }
+
+        .blob-2 {
+            bottom: -10%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(189,191,193,0.3) 0%, rgba(189,191,193,0) 70%);
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-50px, 50px) scale(1.1); }
         }
 
         .container {
@@ -54,132 +92,128 @@
             max-width: 1100px;
             margin: 0 auto;
             width: 100%;
+            position: relative;
         }
 
         /* Header Musaraña */
-        .admin-header-brand {
-            padding: 2rem 0;
+        header {
+            padding: 2.5rem 0;
             text-align: center;
-            border-bottom: 1px solid var(--glass-border);
-            margin-bottom: 2rem;
         }
 
-        .header-logo {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            font-size: 1.8rem;
-            letter-spacing: -1px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .header-logo span {
-            color: var(--musarana-color);
-        }
-
-        .header-subtitle {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #94a3b8;
-            margin-top: 5px;
+        .header-logo-img {
+            max-height: 70px;
+            width: auto;
+            margin-bottom: 0.5rem;
         }
 
         /* Glass Cards */
-        .admin-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        .glass-panel {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-glass);
             margin-bottom: 2rem;
         }
 
         h2, h3, h4 {
-            font-family: 'Outfit', sans-serif;
             margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-weight: 700;
         }
 
-        /* Estilos de botones premium */
-        .btn {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            padding: 0.8rem 1.5rem;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--musarana-color);
-            color: white;
-            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--glass-border);
-            color: white;
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-danger:hover {
-            background: #ef4444;
-            color: white;
-        }
-
-        /* Form Controls */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
+        /* Forms */
+        .form-group { margin-bottom: 1.5rem; }
         .form-group label {
             display: block;
             margin-bottom: 0.6rem;
             font-size: 0.85rem;
             font-weight: 600;
-            color: #94a3b8;
+            color: var(--text-secondary);
         }
 
         .form-control {
             width: 100%;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 0.9rem 1rem;
-            color: white;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.3s;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.8rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.2s;
         }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--musarana-color);
-            background: rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(140, 198, 63, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-page);
+        }
+
+        .btn-danger {
+            background: #fff;
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Items */
+        .item-list { list-style: none; }
+        .item-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .item-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glass);
         }
 
         .grid-2 {
@@ -190,63 +224,55 @@
 
         @media (max-width: 768px) {
             .grid-2 { grid-template-columns: 1fr; }
-        }
-
-        /* Listas de Historias y Proyectos */
-        .item-list { list-style: none; padding: 0; }
-
-        .item-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 1.2rem;
-            margin-bottom: 1rem;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .item-card:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: var(--musarana-color);
-            transform: scale(1.01);
+            .container { padding: 1rem; }
         }
 
         /* Footer */
-        .admin-footer {
-            padding: 3rem 0;
+        footer {
             text-align: center;
-            border-top: 1px solid var(--glass-border);
-            color: #64748b;
+            padding: 3rem;
+            color: var(--text-secondary);
             font-size: 0.8rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            border-top: 1px solid var(--border);
+            background: white;
         }
 
         .hidden { display: none !important; }
 
-        /* Estilo para las secciones de edición */
+        /* Edición */
         .edit-container {
-            background: rgba(0, 0, 0, 0.3);
+            background: #f8fafc;
             padding: 2rem;
-            border-radius: 20px;
+            border-radius: 1.25rem;
             margin-top: 1.5rem;
-            border: 1px solid var(--musarana-color);
+            border: 1px solid var(--border);
+            width: 100%;
+        }
+
+        .project-color-preview {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
-    <div class="admin-bg-dynamic"></div>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
 
-    <header class="admin-header-brand">
-        <div class="header-logo">MUSARAÑA <span>GESTIÓN</span></div>
-        <div class="header-subtitle">Gestión Integral de Museos</div>
+    <header>
+        <!-- Intentamos cargar el logo proporcionado por el usuario -->
+        <img src="/assets/logo-musarana.png" alt="Musaraña Gestión" class="header-logo-img" onerror="this.src='https://via.placeholder.com/200x70?text=MUSARAÑA'">
     </header>
 
-    <div class="container">
+    <div class="container" id="admin-app">
         
-        <!-- Ventana de Login -->
-        <div id="login-view" class="admin-card admin-view">
-            <h2 style="text-align: center;">Acceso Administrador</h2>
+        <!-- Login View -->
+        <div id="login-view" class="glass-panel admin-view">
+            <h2 class="text-center" style="text-align: center;">Acceso al Gestor</h2>
             <form id="login-form">
                 <div class="form-group">
                     <label>Email</label>
@@ -256,27 +282,27 @@
                     <label>Contraseña</label>
                     <input type="password" id="password" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Entrar al Sistema</button>
-                <p id="auth-error" style="color: #f87171; margin-top:1.5rem; text-align:center; font-size:0.9rem;" class="hidden"></p>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+                <p id="auth-error" style="color: var(--danger); margin-top:1.5rem; text-align:center; font-size:0.9rem;" class="hidden"></p>
             </form>
         </div>
 
-        <!-- Vista: Lista de Proyectos -->
+        <!-- Projects View -->
         <div id="projects-view" class="admin-view hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
                 <h2>Proyectos y Clientes</h2>
                 <button id="btn-logout" class="btn btn-danger">Cerrar Sesión</button>
             </div>
 
-            <div class="admin-card">
+            <div class="glass-panel">
                 <h3>+ Crear Nuevo Proyecto</h3>
                 <form id="create-project-form">
                     <div style="display:flex; gap: 1rem; align-items: flex-end;">
                         <div class="form-group" style="flex:1; margin:0;">
                             <label>Nombre del Proyecto</label>
-                            <input type="text" id="new-project-name" class="form-control" required>
+                            <input type="text" id="new-project-name" class="form-control" required placeholder="Nombre del cliente o proyecto...">
                         </div>
-                        <button type="submit" class="btn btn-primary" id="btn-create-project">Añadir</button>
+                        <button type="submit" class="btn btn-primary" id="btn-create-project">Crear</button>
                     </div>
                 </form>
             </div>
@@ -286,79 +312,80 @@
             </ul>
         </div>
 
-        <!-- Vista: Detalle del Proyecto -->
+        <!-- Project Detail View -->
         <div id="project-detail-view" class="admin-view hidden">
-            <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 2rem;">
+            <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 2.5rem;">
                 <div style="display:flex; align-items:center; gap: 1.5rem;">
-                    <button id="btn-back-projects" class="btn btn-outline">← Panel</button>
+                    <button id="btn-back-projects" class="btn btn-outline">← Volver</button>
                     <h2 id="current-project-title" style="margin:0;">Proyecto</h2>
                 </div>
             </div>
 
             <div class="grid-2">
-                <!-- Columna: Marca -->
-                <div class="admin-card">
-                    <h3>Configuración Visual</h3>
+                <!-- Brand Config -->
+                <div class="glass-panel">
+                    <h3>Identidad Visual</h3>
                     <form id="brand-form">
                         <div class="form-group">
-                            <label>Nombre Público</label>
+                            <label>Nombre de Marca</label>
                             <input type="text" id="client-name-input" class="form-control" required>
                         </div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div class="form-group">
-                                <label>Color Acento</label>
-                                <input type="color" id="client-color-input" class="form-control" style="height: 50px;">
+                                <label>Color Marca</label>
+                                <input type="color" id="client-color-input" class="form-control" style="height: 50px; padding: 5px;">
                             </div>
                             <div class="form-group">
                                 <label>Color Fondo</label>
-                                <input type="color" id="client-bg-input" class="form-control" style="height: 50px;">
+                                <input type="color" id="client-bg-input" class="form-control" style="height: 50px; padding: 5px;">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Logo Cliente (PNG/JPG)</label>
+                            <label>Logo (PNG/JPG)</label>
                             <input type="file" id="client-logo-input" class="form-control" accept="image/*">
                         </div>
-                        <img id="logo-preview" class="hidden" style="max-height: 50px; margin-bottom: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 5px;" />
+                        <img id="logo-preview" class="hidden" style="max-height: 40px; margin-bottom: 1.5rem; border-radius: 8px;" />
                         
                         <div class="form-group">
                             <label>Logos Patrocinadores</label>
                             <input type="file" id="footer-logos-input" class="form-control" accept="image/*">
                         </div>
-                        <img id="footer-logos-preview" class="hidden" style="max-height: 40px; margin-bottom: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 5px;" />
+                        <img id="footer-logos-preview" class="hidden" style="max-height: 40px; margin-bottom: 1.5rem; border-radius: 8px;" />
 
-                        <button type="submit" id="btn-save-brand" class="btn btn-primary" style="width: 100%; justify-content: center;">Guardar Identidad</button>
+                        <button type="submit" id="btn-save-brand" class="btn btn-primary" style="width: 100%;">Guardar Cambios</button>
                     </form>
                 </div>
 
-                <!-- Columna: Nueva Historia -->
-                <div class="admin-card">
-                    <h3>Añadir Nuevo Contenido</h3>
+                <!-- Story Upload -->
+                <div class="glass-panel">
+                    <h3>Subir Contenido</h3>
                     <form id="story-form">
                         <div class="form-group">
-                            <input type="text" id="story-title-input" class="form-control" placeholder="Título (ES)" required>
+                            <label>Título (Español)</label>
+                            <input type="text" id="story-title-input" class="form-control" placeholder="Título para QR..." required>
                         </div>
                         <div class="form-group">
-                            <input type="text" id="story-title-en-input" class="form-control" placeholder="Título (EN)">
+                            <label>Título (Inglés)</label>
+                            <input type="text" id="story-title-en-input" class="form-control" placeholder="Title for English version...">
                         </div>
                         <div class="grid-2" style="gap: 1rem; margin-bottom: 1.5rem;">
                             <div class="form-group" style="margin:0;">
-                                <label>Tipo</label>
+                                <label>Tipo de Contenido</label>
                                 <select id="story-type-input" class="form-control">
-                                    <option value="audio">🎵 Audio</option>
-                                    <option value="pdf">📄 PDF</option>
+                                    <option value="audio">🎵 Audio MP3</option>
+                                    <option value="pdf">📄 Documento PDF</option>
                                 </select>
                             </div>
                             <div class="form-group" style="margin:0;">
-                                <label>Personalizar URL</label>
-                                <input type="text" id="story-slug-input" class="form-control" placeholder="Slug...">
+                                <label>URL Corta (Slug)</label>
+                                <input type="text" id="story-slug-input" class="form-control" placeholder="ej: castellar01">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Imagen Portada</label>
+                            <label>Foto de Portada</label>
                             <input type="file" id="story-image-input" class="form-control" accept="image/*">
                         </div>
                         
-                        <!-- Campos Dinámicos -->
                         <div id="fields-audio">
                             <div class="grid-2" style="gap: 10px;">
                                 <div class="form-group">
@@ -386,28 +413,27 @@
                         </div>
 
                         <div class="form-group">
-                            <textarea id="story-transcription-es" class="form-control" rows="2" placeholder="Transcripción ES..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <textarea id="story-transcription-en" class="form-control" rows="2" placeholder="Transcription EN..."></textarea>
+                            <label>Transcripciones</label>
+                            <textarea id="story-transcription-es" class="form-control" rows="2" placeholder="Texto en español..." style="margin-bottom: 0.5rem;"></textarea>
+                            <textarea id="story-transcription-en" class="form-control" rows="2" placeholder="Text in English..."></textarea>
                         </div>
                         
-                        <button type="submit" id="btn-upload-story" class="btn btn-primary" style="width: 100%; justify-content: center;">Subir Historia</button>
+                        <button type="submit" id="btn-upload-story" class="btn btn-primary" style="width: 100%;">Subir Historia</button>
                     </form>
                 </div>
             </div>
 
-            <div class="admin-card">
-                <h3>Historias del Proyecto</h3>
-                <ul id="stories-list" class="item-list">
+            <div class="glass-panel" style="padding: 2.5rem 0;">
+                <h3 style="padding: 0 2.5rem;">Contenido Gestionado</h3>
+                <ul id="stories-list" class="item-list" style="padding: 0 1.25rem;">
                     <!-- Se llena con JS -->
                 </ul>
             </div>
         </div>
     </div>
 
-    <footer class="admin-footer">
-        MUSARAÑA — GESTIÓN INTEGRAL DE MUSEOS © <span id="admin-year">2026</span>
+    <footer>
+        <p>MUSARAÑA — GESTIÓN INTEGRAL DE MUSEOS © <span id="admin-year">2026</span></p>
     </footer>
 
     <script type="module" src="/js/admin.js"></script>
