@@ -35,6 +35,7 @@ const btnSaveBrand = document.getElementById("btn-save-brand");
 
 // DOM Elements: Stories
 const storyForm = document.getElementById("story-form");
+const storyTitleInput = document.getElementById("story-title-input");
 const storyTitleEnInput = document.getElementById("story-title-en-input");
 const storyTypeInput = document.getElementById("story-type-input");
 const storySlugInput = document.getElementById("story-slug-input");
@@ -427,6 +428,11 @@ async function loadStories() {
             try {
                 const newTitle = li.querySelector(".edit-title").value;
                 const newTitleEn = li.querySelector(".edit-title-en").value;
+                const newSlug = li.querySelector(".edit-slug").value;
+                const newImage = li.querySelector(".edit-image").files[0];
+                const newTransEs = li.querySelector(".edit-transcription-es").value;
+                const newTransEn = li.querySelector(".edit-transcription-en").value;
+
                 let updateData = {
                     title: newTitle,
                     title_en: newTitleEn || null,
@@ -529,7 +535,7 @@ storyTypeInput.addEventListener("change", () => {
 storyForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const originalText = btnUploadStory.innerText;
-    btnUploadStory.innerText = i18n[currentLang] ? "Subiendo..." : "Subiendo (no cierres la pestaña)...";
+    btnUploadStory.innerText = "Subiendo (no cierres la pestaña)...";
     btnUploadStory.disabled = true;
 
     try {
