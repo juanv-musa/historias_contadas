@@ -33,6 +33,7 @@ const currentYearSpan = document.getElementById("current-year");
 const audioPlayerWrapper = document.getElementById("audio-player-wrapper");
 const pdfPlayerWrapper = document.getElementById("pdf-player-wrapper");
 const btnViewPdf = document.getElementById("btn-view-pdf");
+const btnDownloadPdf = document.getElementById("btn-download-pdf");
 
 let storyData = null;
 let currentLang = 'ES';
