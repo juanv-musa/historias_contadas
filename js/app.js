@@ -33,7 +33,6 @@ const currentYearSpan = document.getElementById("current-year");
 const audioPlayerWrapper = document.getElementById("audio-player-wrapper");
 const pdfPlayerWrapper = document.getElementById("pdf-player-wrapper");
 const btnViewPdf = document.getElementById("btn-view-pdf");
-const btnDownloadPdf = document.getElementById("btn-download-pdf");
 
 let storyData = null;
 let currentLang = 'ES';
@@ -232,7 +231,6 @@ function setContentSource(lang) {
     if (storyData.content_type === 'pdf') {
         const url = (lang === 'ES') ? storyData.pdf_es_url : storyData.pdf_en_url;
         btnViewPdf.href = url;
-        btnDownloadPdf.href = url;
         
         btnLangEs.classList.toggle("active", lang === 'ES');
         btnLangEn.classList.toggle("active", lang === 'EN');
@@ -283,7 +281,6 @@ function updateLanguageUI() {
 
     if (storyData.content_type === 'pdf') {
         btnViewPdf.innerText = (currentLang === 'ES') ? "📄 Leer Documento" : "📄 Read Document";
-        btnDownloadPdf.innerText = (currentLang === 'ES') ? "💾 Descargar PDF" : "💾 Download PDF";
     }
 }
 
