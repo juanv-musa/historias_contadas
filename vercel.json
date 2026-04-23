@@ -5,6 +5,6 @@
     { "source": "/js/(.*)", "destination": "/js/$1" },
     { "source": "/css/(.*)", "destination": "/css/$1" },
     { "source": "/assets/(.*)", "destination": "/assets/$1" },
-    { "source": "/((?!admin|js|css|assets).*)", "destination": "/index.html" }
+    { "source": "/((?!admin|js|css|assets|api).*)", "destination": "/index.html" }
   ]
 }
