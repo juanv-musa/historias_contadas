@@ -6,5 +6,11 @@
     { "source": "/css/(.*)", "destination": "/css/$1" },
     { "source": "/assets/(.*)", "destination": "/assets/$1" },
     { "source": "/((?!admin|js|css|assets|api).*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/keep-alive",
+      "schedule": "0 12 * * *"
+    }
   ]
 }

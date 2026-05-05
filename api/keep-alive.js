@@ -3,8 +3,8 @@ export default async function handler(request, response) {
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0YmNpc3d6Z2VjenJ5eGp3dmFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDI5ODMsImV4cCI6MjA5MTc3ODk4M30.TbM5C6950Si7qdEfQlD6fU9NPkLzJ1gyU6xEhn7tbRc";
 
   try {
-    // Hacemos una petición simple a la API de Supabase para mantener la conexión activa
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=id&limit=1`, {
+    // Hacemos una petición simple a la API de Supabase a la tabla 'stories' para mantener la conexión activa
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/stories?select=id&limit=1`, {
       headers: {
         'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`
